@@ -7,8 +7,9 @@ namespace RecipeDatabaseApp
 {
     internal class Program
     {
-        static async void Main(string[] args)
+        static async Task Main(string[] args)
         {
+            //await RunMenu();
             // 1. Initialize your database context here
             // e.g using var dbContext = new WebStoreContext();
 
