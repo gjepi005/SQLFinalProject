@@ -1,0 +1,26 @@
+CREATE TABLE  Recipe(
+ID SERIAL PRIMARY KEY,
+Name VARCHAR(50)
+);
+
+CREATE TABLE Ingredients(
+ID SERIAL PRIMARY KEY,
+Name VARCHAR(50) UNIQUE,
+Recipe_ID INT,
+FOREIGN KEY  (Recipe_ID) REFERENCES Recipe(ID)
+);
+
+CREATE TABLE Recipe_Ingredients(
+Recipe_ID INT,
+Ingredient_ID INT,
+FOREIGN KEY (Recipe_ID) REFERENCES Recipe(ID),
+FOREIGN KEY (Ingredient_ID) REFERENCES Ingredients(ID),
+PRIMARY KEY (Recipe_ID, Ingredient_ID)
+);
+
+CREATE TABLE Category(
+Name VARCHAR(50),
+ID SERIAL PRIMARY KEY,
+Recipe_ID INT,
+FOREIGN KEY (Recipe_ID) REFERENCES Recipe(ID)
+);
