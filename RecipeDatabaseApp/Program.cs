@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RecipeDatabaseApp.Controllers;
+using RecipeDatabaseApp.Entities;
 
 namespace RecipeDatabaseApp
 {
@@ -9,6 +10,7 @@ namespace RecipeDatabaseApp
     {
         static async Task Main(string[] args)
         {
+            await RunMenu();
             //await RunMenu();
             // 1. Initialize your database context here
             // e.g using var dbContext = new WebStoreContext();
@@ -20,9 +22,11 @@ namespace RecipeDatabaseApp
         /// <summary>
         /// Simple method that generates terminal menu that can be used to interact with the database
         /// </summary>
-        private static async Task RunMenu(DbContext dbContext)
+        private static async Task RunMenu()
         {
-            var recipeController = new RecipeController(dbContext);
+            
+            using var context = new LopputehtäväContext();
+            var recipeController = new RecipeController(context);
 
             bool exit = false;
             while (!exit)
@@ -92,11 +96,7 @@ namespace RecipeDatabaseApp
                 }
 
             }
-        }
-
-        private static void ListAllRecipes()
-        {
-            throw new NotImplementedException();
+            
         }
     }
 }

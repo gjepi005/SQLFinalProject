@@ -3,3 +3,8 @@
 ################################################################################
 
 /.vs
+/RecipeDatabaseApp/Entities/LopputehtäväContext.cs
+/.gitignore
+/RecipeDatabaseApp/Entities/Category.cs
+/RecipeDatabaseApp/Entities/Ingredient.cs
+/RecipeDatabaseApp/Entities/Recipe.cs
