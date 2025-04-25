@@ -8,3 +8,4 @@
 /RecipeDatabaseApp/Entities/Category.cs
 /RecipeDatabaseApp/Entities/Ingredient.cs
 /RecipeDatabaseApp/Entities/Recipe.cs
+/RecipeDatabaseApp/Entities/LopputehtäväContext.cs
