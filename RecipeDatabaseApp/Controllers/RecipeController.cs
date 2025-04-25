@@ -150,7 +150,23 @@ namespace RecipeDatabaseApp.Controllers
            /// </summary>
            internal async Task UpdateRecipe()
            {
-               throw new NotImplementedException();
+            Console.Clear();
+            Console.WriteLine("What recipe do you want to update?\n");
+
+            var recipes = await _dbContext.Recipes.ToListAsync();
+
+            if (recipes == null || recipes.Count == 0)
+            {
+                Console.WriteLine("No recipes were found.");
+            }
+            foreach (var recipe in recipes)
+            {
+                Console.WriteLine($"Id: {recipe.Id}, Name: {recipe.Name}");
+            }
+
+            string userInput = Console.ReadLine();
+
+            throw new NotImplementedException();
            }
         
     }
