@@ -57,7 +57,16 @@ namespace RecipeDatabaseApp.Controllers
            /// </summary>
            internal async Task AddNewIngredient()
            {
-               throw new NotImplementedException();
+            _dbContext.Ingredients.Add(new Ingredient
+            {
+                Id = 100,
+                Name = "Mutsis :D",
+                RecipeId = null
+            });
+
+            _dbContext.SaveChanges();
+
+            Console.Write("XD");
            }
 
            /// <summary>
