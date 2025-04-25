@@ -36,14 +36,14 @@ namespace RecipeDatabaseApp
 
                     Console.WriteLine("\n=== Recipe Database App ===");
                     Console.WriteLine("1. List All Recipes");
-                    Console.WriteLine("2. Add New Recipe");
-                    Console.WriteLine("3. Update Recipe");
-                    Console.WriteLine("4. Delete Recipe");
-                    Console.WriteLine("5. Fetch Recipes by Category");
-                    Console.WriteLine("6. Search Recipes by Ingredients");
-                    Console.WriteLine("7. Add Category to Recipe");
-                    Console.WriteLine("8. Remove Category from Recipe");
-                    Console.WriteLine("9. Extra option");
+                    Console.WriteLine("2. Add New Ingredient");
+                    Console.WriteLine("3. Add New Recipe");
+                    Console.WriteLine("4. Update Recipe");
+                    Console.WriteLine("5. Delete Recipe");
+                    Console.WriteLine("6. Fetch Recipes by Category");
+                    Console.WriteLine("7. Search Recipes by Ingredients");
+                    Console.WriteLine("8. Add Category to Recipe");
+                    Console.WriteLine("9. Remove Category from Recipe");
                     Console.WriteLine("0. Exit");
                     Console.Write("Select an option: ");
                     var input = Console.ReadLine();

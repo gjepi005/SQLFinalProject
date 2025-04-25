@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipeDatabaseApp.Entities;
+using System.Xml.XPath;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace RecipeDatabaseApp.Controllers
@@ -88,8 +89,26 @@ namespace RecipeDatabaseApp.Controllers
            /// </summary>
            internal async Task DeleteRecipe()
            {
-            throw new NotImplementedException();
-           }
+            Console.Clear();
+            var recipeList = await _dbContext.Recipes.ToListAsync();
+
+            while (true)
+            {
+                Console.WriteLine("Press 0 to go back to the menu");
+                Console.WriteLine("Give recipe ID:");
+                int.TryParse(Console.ReadLine(), out int result);
+
+                if(result == 0)
+                {
+                    break;
+                }
+                var deleteRecipe = recipeList.Where(x => x.Id == result).FirstOrDefault();
+              
+                 _dbContext.Recipes.Remove(deleteRecipe);
+                 _dbContext.SaveChanges();
+            }
+           await ListAllRecipes();
+        }
 
            /// <summary>
            /// Fetches all recipes under a specified category by prompting
