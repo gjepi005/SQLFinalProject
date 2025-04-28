@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipeDatabaseApp.Entities;
+using RecipeDatabaseApp.Entities;
 using System.Xml.XPath;
 using static System.Formats.Asn1.AsnWriter;
 
@@ -7,68 +8,68 @@ namespace RecipeDatabaseApp.Controllers
 {
     public class RecipeController
     {
-          
-           // Update the DbContext to match your dbContext, e.g. WebStoreContext
-           private readonly LopputehtäväContext _dbContext;
 
-           // Update the DbContext to match your dbContext, e.g. WebStoreContext
-           public RecipeController(LopputehtäväContext context)
-           {
-               _dbContext = context;
-           }
+      //  Update the DbContext to match your dbContext, e.g.WebStoreContext
+               private readonly LoppuTehtäväContext _dbContext;
 
-           /// <summary>
-           /// Retrieves all recipes from the database and prints them to the console.
-           /// Implementation should use EF Core to fetch Recipe entities
-           /// and display relevant fields (e.g., ID, Name).
-           /// </summary>
-           public async Task ListAllRecipes()
-           {
-               Console.WriteLine("======= PRINT ALL RECIPES =======\n");
-               // Print out all Recipes
-               var recipes = await _dbContext.Recipes.ToListAsync();
+        // Update the DbContext to match your dbContext, e.g. WebStoreContext
+        public RecipeController(LoppuTehtäväContext context)
+        {
+            _dbContext = context;
+        }
 
-               if (recipes == null || recipes.Count == 0)
-               {
-                   Console.WriteLine("No recipes were found.");
-               }
+        /// <summary>
+        /// Retrieves all recipes from the database and prints them to the console.
+        /// Implementation should use EF Core to fetch Recipe entities
+        /// and display relevant fields (e.g., ID, Name).
+        /// </summary>
+        public async Task ListAllRecipes()
+        {
+            Console.WriteLine("======= PRINT ALL RECIPES =======\n");
+            // Print out all Recipes
+            var recipes = await _dbContext.Recipes.ToListAsync();
 
-               foreach (var recipe in recipes)
+            if (recipes == null || recipes.Count == 0)
             {
-                   Console.WriteLine($"ID: {recipe.Id}, Name: {recipe.Name}");
-               }
-           }
+                Console.WriteLine("No recipes were found.");
+            }
 
-           /// <summary>
-           /// Associates an existing Category with a specified Recipe,
-           /// based on user input (e.g., recipe ID/name and category name).
-           /// The method should validate that both Recipe and Category
-           /// exist, then create the necessary relationship in the database.
-           /// </summary>
-           internal async Task AddCategoryToRecipe()
-           {
-               throw new NotImplementedException();
-           }
+            foreach (var recipe in recipes)
+            {
+                Console.WriteLine($"ID: {recipe.Id}, Name: {recipe.Name}");
+            }
+        }
 
-           /// <summary>
-           /// Allows the user to add a new Ingredient to the database,
-           /// specifying properties such as Name, Type, and any optional
-           /// nutritional details. Should use EF Core to create and
-           /// save the new Ingredient entity.
-           /// </summary>
-           internal async Task AddNewIngredient()
-           {
+        /// <summary>
+        /// Associates an existing Category with a specified Recipe,
+        /// based on user input (e.g., recipe ID/name and category name).
+        /// The method should validate that both Recipe and Category
+        /// exist, then create the necessary relationship in the database.
+        /// </summary>
+        internal async Task AddCategoryToRecipe()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Allows the user to add a new Ingredient to the database,
+        /// specifying properties such as Name, Type, and any optional
+        /// nutritional details. Should use EF Core to create and
+        /// save the new Ingredient entity.
+        /// </summary>
+        internal async Task AddNewIngredient()
+        {
             _dbContext.Ingredients.Add(new Ingredient
             {
                 Id = 100,
                 Name = "Mutsis :D",
-                RecipeId = null
+          //      RecipeId = null
             });
 
             _dbContext.SaveChanges();
 
             Console.Write("XD");
-           }
+        }
 
         internal async Task AddNewIngredient(string ing)
         {
@@ -135,7 +136,7 @@ namespace RecipeDatabaseApp.Controllers
         /// RecipeIngredient junction tables) if cascades are not enabled.
         /// </summary>
         internal async Task DeleteRecipe()
-           {
+        {
             Console.Clear();
             var recipeList = await _dbContext.Recipes.ToListAsync();
 
@@ -145,58 +146,58 @@ namespace RecipeDatabaseApp.Controllers
                 Console.WriteLine("Give recipe ID:");
                 int.TryParse(Console.ReadLine(), out int result);
 
-                if(result == 0)
+                if (result == 0)
                 {
                     break;
                 }
                 var deleteRecipe = recipeList.Where(x => x.Id == result).FirstOrDefault();
-              
-                 _dbContext.Recipes.Remove(deleteRecipe);
-                 _dbContext.SaveChanges();
+
+                _dbContext.Recipes.Remove(deleteRecipe);
+                _dbContext.SaveChanges();
             }
-           await ListAllRecipes();
+            await ListAllRecipes();
         }
 
-           /// <summary>
-           /// Fetches all recipes under a specified category by prompting
-           /// the user for the category name. Uses EF Core and LINQ
-           /// to filter recipes belonging to that category, then prints 
-           /// them to the console.
-           /// </summary>
-           internal async Task FetchRecipeByCategory()
-           {
-               throw new NotImplementedException();
-           }
+        /// <summary>
+        /// Fetches all recipes under a specified category by prompting
+        /// the user for the category name. Uses EF Core and LINQ
+        /// to filter recipes belonging to that category, then prints 
+        /// them to the console.
+        /// </summary>
+        internal async Task FetchRecipeByCategory()
+        {
+            throw new NotImplementedException();
+        }
 
-           /// <summary>
-           /// Removes a given Category association from a Recipe.
-           /// The method should confirm both entities exist, then remove
-           /// their relationship in the junction table or foreign key.
-           /// </summary>
-           internal async Task RemoveCategoryFromRecipe()
-           {
-               throw new NotImplementedException();
-           }
+        /// <summary>
+        /// Removes a given Category association from a Recipe.
+        /// The method should confirm both entities exist, then remove
+        /// their relationship in the junction table or foreign key.
+        /// </summary>
+        internal async Task RemoveCategoryFromRecipe()
+        {
+            throw new NotImplementedException();
+        }
 
-           /// <summary>
-           /// Searches for recipes containing all of the user-specified
-           /// ingredients. The user can input multiple ingredient names;
-           /// the method should return only recipes that include
-           /// all those ingredients.
-           /// </summary>
-           internal async Task SearchRecipeByIngredients()
-           {
-               throw new NotImplementedException();
-           }
+        /// <summary>
+        /// Searches for recipes containing all of the user-specified
+        /// ingredients. The user can input multiple ingredient names;
+        /// the method should return only recipes that include
+        /// all those ingredients.
+        /// </summary>
+        internal async Task SearchRecipeByIngredients()
+        {
+            throw new NotImplementedException();
+        }
 
-           /// <summary>
-           /// Updates fields of an existing Recipe, e.g., Name, Description,
-           /// or other metadata. Prompts the user for a Recipe identifier,
-           /// retrieves the entity from the database, modifies fields,
-           /// and saves changes back to the database.
-           /// </summary>
-           internal async Task UpdateRecipe()
-           {
+        /// <summary>
+        /// Updates fields of an existing Recipe, e.g., Name, Description,
+        /// or other metadata. Prompts the user for a Recipe identifier,
+        /// retrieves the entity from the database, modifies fields,
+        /// and saves changes back to the database.
+        /// </summary>
+        internal async Task UpdateRecipe()
+        {
             Console.Clear();
             Console.WriteLine("What recipe do you want to update?\n");
 
@@ -214,7 +215,7 @@ namespace RecipeDatabaseApp.Controllers
             string userInput = Console.ReadLine();
 
             throw new NotImplementedException();
-           }
-        
+        }
+
     }
 }
