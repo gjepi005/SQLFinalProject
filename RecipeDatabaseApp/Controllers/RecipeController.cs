@@ -150,6 +150,7 @@ namespace RecipeDatabaseApp.Controllers
            /// </summary>
            internal async Task UpdateRecipe()
            {
+
             Console.Clear();
             Console.WriteLine("What recipe do you want to update?\n");
 
@@ -164,10 +165,34 @@ namespace RecipeDatabaseApp.Controllers
                 Console.WriteLine($"Id: {recipe.Id}, Name: {recipe.Name}");
             }
 
-            string userInput = Console.ReadLine();
+            Console.WriteLine("\nEnter Recipe ID: ");
+            int userInput = int.Parse(Console.ReadLine());
+            var existingRecipes = await _dbContext.Recipes
+                .Include(r => r.Ingredients)
+                .FirstOrDefaultAsync(r => r.Id == userInput);
+
+            if (existingRecipes == null)
+            {
+                Console.WriteLine("Recipe not found");
+                return;
+            }
+
+            Console.Clear();
+            Console.WriteLine($"Updating Recipe: {existingRecipes.Name}");
+
+            Console.WriteLine($"\nEnter new name (leave blank to keep current): ");
+            var newName = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(newName))
+                existingRecipes.Name = newName;
+
+            //TODO Category
+
+
+
+            throw new NotImplementedException();
+
 
             throw new NotImplementedException();
            }
-        
     }
 }
