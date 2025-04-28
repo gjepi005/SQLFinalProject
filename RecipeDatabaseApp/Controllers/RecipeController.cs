@@ -1,11 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipeDatabaseApp.Entities;
+using RecipeDatabaseApp.Entities;
+using System.Xml.XPath;
+using static System.Formats.Asn1.AsnWriter;
+
 
 namespace RecipeDatabaseApp.Controllers
 {
     public class RecipeController
-    {
-          
+    {     
            // Update the DbContext to match your dbContext, e.g. WebStoreContext
            private readonly LopputehtäväContext _dbContext;
 
@@ -182,7 +185,6 @@ namespace RecipeDatabaseApp.Controllers
         {
             throw new NotImplementedException();
         }
-
            /// <summary>
            /// Fetches all recipes under a specified category by prompting
            /// the user for the category name. Uses EF Core and LINQ
@@ -263,6 +265,7 @@ namespace RecipeDatabaseApp.Controllers
         /// all those ingredients.
         /// </summary>
         internal async Task SearchRecipeByIngredients()
+
            {
                throw new NotImplementedException();
            }
@@ -293,6 +296,7 @@ namespace RecipeDatabaseApp.Controllers
             string userInput = Console.ReadLine();
 
             throw new NotImplementedException();
+
            }
      
     }
