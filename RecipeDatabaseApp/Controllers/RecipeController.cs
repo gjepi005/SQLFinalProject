@@ -10,10 +10,10 @@ namespace RecipeDatabaseApp.Controllers
     public class RecipeController
     {     
            // Update the DbContext to match your dbContext, e.g. WebStoreContext
-           private readonly LopputehtäväContext _dbContext;
+           private readonly ReseptiOhjelmaContext _dbContext;
 
            // Update the DbContext to match your dbContext, e.g. WebStoreContext
-           public RecipeController(LopputehtäväContext context)
+           public RecipeController(ReseptiOhjelmaContext context)
            {
                _dbContext = context;
            }
@@ -80,6 +80,7 @@ namespace RecipeDatabaseApp.Controllers
             _dbContext.Ingredients.Add(new Ingredient
             {
                 Id = 100,
+
                 Name = "Mutsis :D",
             });
 
@@ -325,11 +326,74 @@ namespace RecipeDatabaseApp.Controllers
                 Console.WriteLine($"Id: {recipe.Id}, Name: {recipe.Name}");
             }
 
-            string userInput = Console.ReadLine();
+            Console.WriteLine("\nEnter Recipe ID: ");
+            if(!int.TryParse(Console.ReadLine(), out int userInput))
+            {
+                Console.WriteLine("Invalid ID entered.");
+                return;
+            }
+            var existingRecipes = await _dbContext.Recipes
+                .Include(r => r.Ingredients)
+                .FirstOrDefaultAsync(r => r.Id == userInput);
 
-            throw new NotImplementedException();
+            if (existingRecipes == null)
+            {
+                Console.WriteLine("Recipe not found");
+                return;
+            }
 
+            Console.Clear();
+            Console.WriteLine($"Updating Recipe: {existingRecipes.Name}");
+
+            Console.WriteLine($"\nEnter new name (leave blank to keep current): ");
+            var newName = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(newName))
+                existingRecipes.Name = newName;
+
+            //TODO Category
+            Console.WriteLine("\nAvailable categories:");
+            var categories = await _dbContext.Categories.ToListAsync();
+            foreach (var category in categories)
+            {
+                Console.WriteLine($"Id: {category.Id}, Name: {category.Name}");
+            }
+            Console.WriteLine("\nEnter new category ID (leave blank to keep current): ");
+            var newCategoryInput = Console.ReadLine();
+
+            if(!string.IsNullOrWhiteSpace(newCategoryInput) && int.TryParse(newCategoryInput, out int newCategoryId))
+            {
+                var newCategory = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == newCategoryId);
+                if(newCategory != null)
+                {
+                    existingRecipes.Category = newCategory;
+                }
+                else
+                {
+                    Console.WriteLine("Category not found. Keeping the old category.");
+                }
+            }
+
+
+            //TODO Ingredients
+            Console.WriteLine("\nDo you want to update ingredients? (y/n)");
+            var updateIngredients = Console.ReadLine()?.ToLower();
+
+            if(updateIngredients == "y")
+            {
+                foreach(var ingredient in existingRecipes.Ingredients)
+                {
+                    Console.WriteLine($"\n Current Ingredient: {ingredient.Name}");
+
+                    Console.WriteLine("Enter new name (leave blank to keep current): ");
+                    var newIngrdientName = Console.ReadLine()?.ToLower();
+                    if(!string.IsNullOrWhiteSpace(newIngrdientName))
+                        ingredient.Name = newIngrdientName;
+                    // Huom: Tässä ei käsitellä quantitya, Koska Ingredientissa ei ole Quantity-kenttää
+                }
+            }
+
+            await _dbContext.SaveChangesAsync();
+            Console.WriteLine($"\nRecipe updated successfully!");
            }
-     
     }
 }

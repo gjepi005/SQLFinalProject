@@ -23,6 +23,7 @@ namespace RecipeDatabaseApp
         {
 
             using var context = new LoppuTehtäväContext();
+
             var recipeController = new RecipeController(context);
 
             bool exit = false;
