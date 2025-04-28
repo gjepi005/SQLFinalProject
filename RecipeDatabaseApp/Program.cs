@@ -62,7 +62,7 @@ namespace RecipeDatabaseApp
                             await recipeController.AddNewRecipe();
                             break;
                         case "4":
-                            //await recipeController.UpdateRecipe();
+                            await recipeController.UpdateRecipe();
                             break;
                         case "5":
                             await recipeController.DeleteRecipe();
@@ -71,7 +71,7 @@ namespace RecipeDatabaseApp
                             await recipeController.FetchRecipeByCategory();
                             break;
                         case "7":
-                            //await recipeController.SearchRecipeByIngredients();
+                            await recipeController.SearchRecipeByIngredients();
                             break;
                         case "8":
                             await recipeController.AddCategoryToRecipe();

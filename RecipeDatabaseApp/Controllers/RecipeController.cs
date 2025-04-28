@@ -47,6 +47,9 @@ namespace RecipeDatabaseApp.Controllers
            /// </summary>
            internal async Task AddCategoryToRecipe()
            {
+            // List all categories
+            await ListAllCategories();
+
             // Ask user for category name
             Console.Write("Give category name: ");
             string categoryName = Console.ReadLine();
@@ -208,12 +211,18 @@ namespace RecipeDatabaseApp.Controllers
            /// </summary>
            internal async Task RemoveCategoryFromRecipe()
            {
-            ListAllCategories();    
 
+            // List all categories
+                await ListAllCategories();    
+
+            // Ask for id
                 Console.Write("Kirjoita haluamasi ID: ");
                 int id = int.Parse(Console.ReadLine());
 
                 var itemToDelete = _dbContext.Categories.Where(x => x.Id == id).FirstOrDefault();
+
+                if (itemToDelete == null)
+                    return;
 
                 _dbContext.Categories.Remove(itemToDelete);
                 _dbContext.SaveChanges();
@@ -226,7 +235,7 @@ namespace RecipeDatabaseApp.Controllers
 
             if (categories == null || categories.Count == 0)
             {
-                Console.WriteLine("No recipes were found in this category.");
+                Console.WriteLine("No categories were found.");
                 return;
             }
             else
@@ -236,7 +245,6 @@ namespace RecipeDatabaseApp.Controllers
                     Console.WriteLine($"ID: {item.Id}, Name: {item.Name}");
                 }
             }
-
         }
 
         /// <summary>
