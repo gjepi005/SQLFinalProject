@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipeDatabaseApp.Entities;
-using System.Xml.XPath;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace RecipeDatabaseApp.Controllers
 {
@@ -85,7 +83,7 @@ namespace RecipeDatabaseApp.Controllers
             _dbContext.SaveChanges();
 
             Console.Write("XD");
-           }
+        }
 
         internal async Task AddNewIngredient(string ing)
         {
@@ -152,7 +150,7 @@ namespace RecipeDatabaseApp.Controllers
         /// RecipeIngredient junction tables) if cascades are not enabled.
         /// </summary>
         internal async Task DeleteRecipe()
-           {
+        {
             Console.Clear();
             var recipeList = await _dbContext.Recipes.ToListAsync();
 
@@ -162,16 +160,27 @@ namespace RecipeDatabaseApp.Controllers
                 Console.WriteLine("Give recipe ID:");
                 int.TryParse(Console.ReadLine(), out int result);
 
-                if(result == 0)
+                if (result == 0)
                 {
                     break;
                 }
                 var deleteRecipe = recipeList.Where(x => x.Id == result).FirstOrDefault();
-              
-                 _dbContext.Recipes.Remove(deleteRecipe);
-                 _dbContext.SaveChanges();
+
+                _dbContext.Recipes.Remove(deleteRecipe);
+                _dbContext.SaveChanges();
             }
-           await ListAllRecipes();
+            await ListAllRecipes();
+        }
+
+        /// <summary>
+        /// Fetches all recipes under a specified category by prompting
+        /// the user for the category name. Uses EF Core and LINQ
+        /// to filter recipes belonging to that category, then prints 
+        /// them to the console.
+        /// </summary>
+        internal async Task FetchRecipeByCategory()
+        {
+            throw new NotImplementedException();
         }
 
            /// <summary>
@@ -266,6 +275,7 @@ namespace RecipeDatabaseApp.Controllers
            /// </summary>
            internal async Task UpdateRecipe()
            {
+
             Console.Clear();
             Console.WriteLine("What recipe do you want to update?\n");
 

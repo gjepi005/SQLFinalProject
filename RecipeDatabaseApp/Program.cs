@@ -11,7 +11,6 @@ namespace RecipeDatabaseApp
         static async Task Main(string[] args)
         {
             await RunMenu();
-            //await RunMenu();
             // 1. Initialize your database context here
             // e.g using var dbContext = new WebStoreContext();
 
