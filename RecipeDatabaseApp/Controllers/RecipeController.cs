@@ -107,45 +107,72 @@ namespace RecipeDatabaseApp.Controllers
         /// </summary>
         internal async Task AddNewRecipe()
         {
-            var ingredients = await _dbContext.Ingredients.ToListAsync();
-            List<string> Inputingredients = new List<string>();
+            Console.Write("Enter recipe name: ");
+            string recipeName = Console.ReadLine();
 
-            Console.WriteLine("Recipe Name:");
-            string name = Console.ReadLine();
-            while (true)
+            // 2. Pyydetään kategoria
+            Console.Write("Enter category name (or leave blank): ");
+            string categoryName = Console.ReadLine();
+
+            // 3. Hakee olemassa olevan kategorian (tai luo uuden jos ei löydy)
+            Category category = null;
+            if (!string.IsNullOrEmpty(categoryName))
             {
-                Console.WriteLine("Press 0 to continue");
-                Console.WriteLine("Give ingredient");
-                string input = Console.ReadLine();
-                if (input == "0")
-                {
-                    break;
-                }
-                Inputingredients.Add(input);
+                category = await _dbContext.Categories
+                    .FirstOrDefaultAsync(c => c.Name.ToLower() == categoryName.ToLower());
 
+                if (category == null)
+                {
+                    // Jos kategoriaa ei ole, voidaan luoda uusi
+                    category = new Category { Name = categoryName };
+                    await _dbContext.Categories.AddAsync(category);
+                }
             }
 
-            var existingNames = _dbContext.Ingredients
-                .Select(i => i.Name)
-                .ToHashSet();
+            // 4. Pyydetään ainesosien nimet (eroteltu pilkulla)
+            Console.Write("Enter ingredients (comma separated): ");
+            string ingredientsInput = Console.ReadLine();
+            var ingredientNames = ingredientsInput.Split(',').Select(i => i.Trim().ToLower()).ToList();
 
-            var newIngredients = Inputingredients
-                .Where(i => !existingNames.Contains(i.ToString()))
+            // 5. Haetaan olemassa olevat ainesosat tietokannasta
+            var existingIngredients = await _dbContext.Ingredients
+                .Where(i => ingredientNames.Contains(i.Name.ToLower()))
+                .ToListAsync();
+
+            // 6. Lisätään uudet ainesosat, joita ei löydy tietokannasta
+            var newIngredients = ingredientNames
+                .Where(name => !existingIngredients.Any(i => i.Name.ToLower() == name))
+                .Select(name => new Ingredient { Name = name })
                 .ToList();
 
-            foreach (string ing in newIngredients)
+            if (newIngredients.Any())
             {
-                Console.WriteLine("ADDED NEW INGREDIENT");
-                await AddNewIngredient(ing);
+                // Lisätään uudet ainesosat tietokantaan
+                await _dbContext.Ingredients.AddRangeAsync(newIngredients);
+                await _dbContext.SaveChangesAsync();
+
+                existingIngredients = await _dbContext.Ingredients
+                    .Where(i => ingredientNames.Contains(i.Name.ToLower()))
+                    .ToListAsync();
             }
 
-            //_dbContext.Recipes.Add(new Recipe
-            //{
-            //    Id = 100,
-            //    Name = name,
+            // 7. Luodaan uusi resepti
+            var newRecipe = new Recipe
+            {
+                Name = recipeName,
+                Category = category  // Liitetään kategoria, jos valittiin
+            };
 
-            //});
+            // 8. Liitetään ainesosat reseptiin
+            newRecipe.Ingredients = existingIngredients;
+
+            // 9. Lisätään resepti tietokantaan
+            await _dbContext.Recipes.AddAsync(newRecipe);
+            await _dbContext.SaveChangesAsync();
+
+            Console.WriteLine($"Recipe '{recipeName}' has been added successfully!");
         }
+    
 
         /// <summary>
         /// Removes an existing Recipe from the database by prompting
@@ -176,16 +203,6 @@ namespace RecipeDatabaseApp.Controllers
             await ListAllRecipes();
         }
 
-        /// <summary>
-        /// Fetches all recipes under a specified category by prompting
-        /// the user for the category name. Uses EF Core and LINQ
-        /// to filter recipes belonging to that category, then prints 
-        /// them to the console.
-        /// </summary>
-        internal async Task FetchRecipeByCategory()
-        {
-            throw new NotImplementedException();
-        }
            /// <summary>
            /// Fetches all recipes under a specified category by prompting
            /// the user for the category name. Uses EF Core and LINQ
