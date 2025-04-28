@@ -25,7 +25,7 @@ namespace RecipeDatabaseApp
         private static async Task RunMenu()
         {
             
-            using var context = new LopputehtäväContext();
+            using var context = new ReseptiOhjelmaContext();
             var recipeController = new RecipeController(context);
 
             bool exit = false;
