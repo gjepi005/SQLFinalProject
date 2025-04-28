@@ -22,7 +22,7 @@ namespace RecipeDatabaseApp
         private static async Task RunMenu()
         {
 
-            using var context = new LoppuTehtäväContext();
+            using var context = new LopputehtäväContext();
             var recipeController = new RecipeController(context);
 
             bool exit = false;
@@ -53,7 +53,14 @@ namespace RecipeDatabaseApp
                             await recipeController.ListAllRecipes();
                             break;
                         case "2":
-                            await recipeController.AddNewIngredient();
+                            Console.WriteLine("Enter ingredient name:");
+                            string ingredient = Console.ReadLine();
+                            if (!string.IsNullOrEmpty(ingredient))
+                            {
+                                await recipeController.AddNewIngredient(ingredient);
+                            }
+                            else
+                                Console.WriteLine("Cannot be empty!");
                             break;
                         case "3":
                             await recipeController.AddNewRecipe();
