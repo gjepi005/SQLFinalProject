@@ -70,24 +70,71 @@ namespace RecipeDatabaseApp.Controllers
             Console.Write("XD");
            }
 
-           /// <summary>
-           /// Creates a new Recipe entry by prompting the user for
-           /// recipe details (name, description, etc.). 
-           /// Implementation should add a new Recipe entity via EF Core
-           /// and save changes to the database.
-           /// </summary>
-           internal async Task AddNewRecipe()
-           {
-               throw new NotImplementedException();
-           }
+        internal async Task AddNewIngredient(string ing)
+        {
+            _dbContext.Ingredients.Add(new Ingredient
+            {
+                Name = ing
+            });
+            Console.WriteLine("TOIMII");
+            _dbContext.SaveChanges();
+        }
 
-           /// <summary>
-           /// Removes an existing Recipe from the database by prompting
-           /// the user for a Recipe identifier (e.g., ID or name).
-           /// Should handle deletion of any related data (e.g., from
-           /// RecipeIngredient junction tables) if cascades are not enabled.
-           /// </summary>
-           internal async Task DeleteRecipe()
+        /// <summary>
+        /// Creates a new Recipe entry by prompting the user for
+        /// recipe details (name, description, etc.). 
+        /// Implementation should add a new Recipe entity via EF Core
+        /// and save changes to the database.
+        /// </summary>
+        internal async Task AddNewRecipe()
+        {
+            var ingredients = await _dbContext.Ingredients.ToListAsync();
+            List<string> Inputingredients = new List<string>();
+
+            Console.WriteLine("Recipe Name:");
+            string name = Console.ReadLine();
+            while (true)
+            {
+                Console.WriteLine("Press 0 to continue");
+                Console.WriteLine("Give ingredient");
+                string input = Console.ReadLine();
+                if (input == "0")
+                {
+                    break;
+                }
+                Inputingredients.Add(input);
+
+            }
+
+            var existingNames = _dbContext.Ingredients
+    .Select(i => i.Name)
+    .ToHashSet();
+
+            var newIngredients = Inputingredients
+                .Where(i => !existingNames.Contains(i.ToString()))
+                .ToList();
+
+            foreach (string ing in newIngredients)
+            {
+                Console.WriteLine("ADDED NEW INGREDIENT");
+                await AddNewIngredient(ing);
+            }
+
+            //_dbContext.Recipes.Add(new Recipe
+            //{
+            //    Id = 100,
+            //    Name = name,
+
+            //});
+        }
+
+        /// <summary>
+        /// Removes an existing Recipe from the database by prompting
+        /// the user for a Recipe identifier (e.g., ID or name).
+        /// Should handle deletion of any related data (e.g., from
+        /// RecipeIngredient junction tables) if cascades are not enabled.
+        /// </summary>
+        internal async Task DeleteRecipe()
            {
             Console.Clear();
             var recipeList = await _dbContext.Recipes.ToListAsync();
