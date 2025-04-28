@@ -1,26 +1,51 @@
-CREATE TABLE  Recipe(
-ID SERIAL PRIMARY KEY,
-Name VARCHAR(50)
-);
+CREATE TABLE Category (  
 
-CREATE TABLE Ingredients(
-ID SERIAL PRIMARY KEY,
-Name VARCHAR(50) UNIQUE,
-Recipe_ID INT,
-FOREIGN KEY  (Recipe_ID) REFERENCES Recipe(ID)
-);
+ID SERIAL PRIMARY KEY,  
 
-CREATE TABLE Recipe_Ingredients(
-Recipe_ID INT,
-Ingredient_ID INT,
-FOREIGN KEY (Recipe_ID) REFERENCES Recipe(ID),
-FOREIGN KEY (Ingredient_ID) REFERENCES Ingredients(ID),
-PRIMARY KEY (Recipe_ID, Ingredient_ID)
-);
+Name VARCHAR(50) UNIQUE  
 
-CREATE TABLE Category(
-Name VARCHAR(50),
-ID SERIAL PRIMARY KEY,
-Recipe_ID INT,
-FOREIGN KEY (Recipe_ID) REFERENCES Recipe(ID)
-);
+); 
+
+ 
+
+CREATE TABLE Recipe (  
+
+ID SERIAL PRIMARY KEY,  
+
+Name VARCHAR(50),  
+
+Category_ID INT,  
+
+FOREIGN KEY (Category_ID) REFERENCES Category(ID)  
+
+); 
+
+ 
+
+ 
+
+ 
+
+CREATE TABLE Ingredient (  
+
+ID SERIAL PRIMARY KEY,  
+
+Name VARCHAR(50) UNIQUE  
+
+); 
+
+ 
+
+CREATE TABLE Recipe_Ingredient (  
+
+Recipe_ID INT,  
+
+Ingredient_ID INT,  
+
+FOREIGN KEY (Recipe_ID) REFERENCES Recipe(ID) ON DELETE CASCADE,  
+
+FOREIGN KEY (Ingredient_ID) REFERENCES Ingredient(ID) ON DELETE CASCADE,  
+
+PRIMARY KEY (Recipe_ID, Ingredient_ID)  
+
+); 
