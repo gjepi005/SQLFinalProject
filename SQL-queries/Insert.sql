@@ -1,39 +1,79 @@
--- RECIPE
-INSERT INTO Recipe (Name) VALUES ('Makaroonilaatikko');
-INSERT INTO Recipe (Name) VALUES ('Mustikkapiirakka');
-INSERT INTO Recipe (Name) VALUES ('Smoothie');
+INSERT INTO Category (Name) VALUES ('Pääruoka');  
 
--- INGREDIENTS
-INSERT INTO Ingredients (Name) VALUES 
-('Makarooni'), 
-('Jauheliha'), 
-('Kananmuna'), 
-('Maito'), 
-('Mustikka'), 
-('Vehnäjauho'), 
-('Voi'), 
-('Sokeri'), 
-('Banaani');
+INSERT INTO Category (Name) VALUES ('Jälkiruoka');  
 
+INSERT INTO Category (Name) VALUES ('Välipala'); 
 
--- RECIPE_INGREDIENTS
--- Makaroonilaatikko
-INSERT INTO Recipe_ingredients (Recipe_ID, Ingredient_ID) VALUES
-(1, 1), -- Makaroonilaatikko, Makarooni
-(1,2), -- Makaroonilaatikko, Jauheliha
-(1,3), -- Makaroonilaatikko, Kananmuna
-(1,4), -- Makaroonilaatikko, Maito
-(2,5), -- Mustikkapiirakka, Mustikka
-(2,6), -- Mustikkapiirakka, Vehnäjauho
-(2,3), -- Mustikkapiirakka, Kananmuna
-(2,7), -- Mustikkapiirakka, Voi
-(2,8), -- Mustikkapiirakka, Sokeri
-(3,8), -- Smoothie, Sokeri
-(3,9), -- Smoothie, Banaani
-(3,4) -- Smoothie, Maito;
+ 
 
--- CATEGORY
-INSERT INTO Category (Name, Recipe_ID) VALUES 
-('Pääruoka', 1),
-('Jälkiruoka', 2),
-('Välipala', 3);
+-- RECIPE 
+
+INSERT INTO Recipe (Name, Category_ID) VALUES ('Makaroonilaatikko', 1);  
+
+INSERT INTO Recipe (Name, Category_ID) VALUES ('Mustikkapiirakka', 2);  
+
+INSERT INTO Recipe (Name, Category_ID) VALUES ('Smoothie', 3); 
+
+ 
+
+-- INGREDIENTS  
+
+INSERT INTO Ingredient (Name) VALUES ( 
+
+'Makarooni'),  
+
+('Jauheliha'),  
+
+('Kananmuna'),  
+
+('Maito'),  
+
+('Mustikka'),  
+
+('Vehnäjauho'),  
+
+('Voi'),  
+
+('Sokeri'),  
+
+('Banaani'); 
+
+-- RECIPE_INGREDIENTS  
+
+-- Makaroonilaatikko  
+
+INSERT INTO Recipe_Ingredient (Recipe_ID, Ingredient_ID) VALUES  
+
+(1, 1), -- Makarooni  
+
+(1, 2), -- Jauheliha  
+
+(1, 3), -- Kananmuna  
+
+(1, 4); -- Maito 
+
+ 
+
+-- Mustikkapiirakka  
+
+INSERT INTO Recipe_Ingredient (Recipe_ID, Ingredient_ID) VALUES  
+
+(2, 5), -- Mustikka  
+
+(2, 6), -- Vehnäjauho  
+
+(2, 3), -- Kananmuna  
+
+(2, 7), -- Voi  
+
+(2, 8); -- Sokeri 
+
+-- Smoothie  
+
+INSERT INTO Recipe_Ingredient (Recipe_ID, Ingredient_ID) VALUES  
+
+(3, 8), -- Sokeri  
+
+(3, 9), -- Banaani  
+
+(3, 4); -- Maito 

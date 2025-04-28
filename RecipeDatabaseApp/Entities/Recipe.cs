@@ -9,9 +9,9 @@ public partial class Recipe
 
     public string? Name { get; set; }
 
-    public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+    public int? CategoryId { get; set; }
+
+    public virtual Category? Category { get; set; }
 
     public virtual ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
-
-    public virtual ICollection<Ingredient> IngredientsNavigation { get; set; } = new List<Ingredient>();
 }
