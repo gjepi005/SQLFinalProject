@@ -172,7 +172,7 @@ namespace RecipeDatabaseApp.Controllers
         /// </summary>
         internal async Task RemoveCategoryFromRecipe()
         {
-            throw new NotImplementedException();
+
         }
 
         /// <summary>
@@ -183,7 +183,38 @@ namespace RecipeDatabaseApp.Controllers
         /// </summary>
         internal async Task SearchRecipeByIngredients()
         {
-            throw new NotImplementedException();
+            Console.Clear();
+            Console.WriteLine("Syötä halutut ainesosat, erottele useat ainesosat pilkuilla.");
+            var recipes = await _dbContext.Recipes.ToListAsync();
+            string wantedIngredientsInput = Console.ReadLine();
+
+            var wantedIngredients = wantedIngredientsInput
+      .Split(',', StringSplitOptions.RemoveEmptyEntries)
+      .Select(i => i.Trim().ToLower()) // kirjaimet muutetaan pieneksi.
+      .ToList();
+
+            recipes = await _dbContext.Recipes
+    .Include(r => r.Ingredients)
+    .ToListAsync();
+
+            var matchingRecipes = recipes
+    .Where(recipe => wantedIngredients
+        .All(wanted => recipe.Ingredients
+            .Any(ingredient => ingredient.Name.ToLower().Contains(wanted))))
+    .ToList();
+
+            if (matchingRecipes.Any())
+            {
+                Console.WriteLine("\nFound Recipes:");
+                foreach (var recipe in matchingRecipes)
+                {
+                    Console.WriteLine($"- {recipe.Name}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("\nNo recipes found with the given ingredients.");
+            }
         }
 
         /// <summary>
