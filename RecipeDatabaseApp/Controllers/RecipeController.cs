@@ -1,101 +1,101 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipeDatabaseApp.Entities;
-using RecipeDatabaseApp.Entities;
-using System.Xml.XPath;
-using static System.Formats.Asn1.AsnWriter;
 
 
 namespace RecipeDatabaseApp.Controllers
 {
     public class RecipeController
-    {     
-           // Update the DbContext to match your dbContext, e.g. WebStoreContext
-           private readonly LopputehtäväContext _dbContext;
+    {
+        // Update the DbContext to match your dbContext, e.g. WebStoreContext
+        private readonly LopputehtäväContext _dbContext;
 
-           // Update the DbContext to match your dbContext, e.g. WebStoreContext
-           public RecipeController(LopputehtäväContext context)
-           {
-               _dbContext = context;
-           }
+        // Update the DbContext to match your dbContext, e.g. WebStoreContext
+        public RecipeController(LopputehtäväContext context)
+        {
+            _dbContext = context;
+        }
 
-           /// <summary>
-           /// Retrieves all recipes from the database and prints them to the console.
-           /// Implementation should use EF Core to fetch Recipe entities
-           /// and display relevant fields (e.g., ID, Name).
-           /// </summary>
-           public async Task ListAllRecipes()
-           {
-               Console.WriteLine("======= PRINT ALL RECIPES =======\n");
-               // Gather all recipes from Database
-               var recipes = await _dbContext.Recipes.ToListAsync();
+        /// <summary>
+        /// Retrieves all recipes from the database and prints them to the console.
+        /// Implementation should use EF Core to fetch Recipe entities
+        /// and display relevant fields (e.g., ID, Name).
+        /// </summary>
+        public async Task ListAllRecipes()
+        {
+            Console.WriteLine("======= PRINT ALL RECIPES =======\n");
+            // Gather all recipes from Database
+            var recipes = await _dbContext.Recipes.ToListAsync();
 
-               if (recipes == null || recipes.Count == 0)
-               {
-                   Console.WriteLine("No recipes were found.");
-               }
+            if (recipes == null || recipes.Count == 0)
+            {
+                Console.WriteLine("No recipes were found.");
+            }
 
-               foreach (var recipe in recipes)
-               {
-                   Console.WriteLine($"ID: {recipe.Id}, Name: {recipe.Name}");
-               }
-           }
+            foreach (var recipe in recipes)
+            {
+                Console.WriteLine($"ID: {recipe.Id}, Name: {recipe.Name}");
+            }
+        }
 
-           /// <summary>
-           /// Associates an existing Category with a specified Recipe,
-           /// based on user input (e.g., recipe ID/name and category name).
-           /// The method should validate that both Recipe and Category
-           /// exist, then create the necessary relationship in the database.
-           /// </summary>
-           internal async Task AddCategoryToRecipe()
-           {
+        /// <summary>
+        /// Associates an existing Category with a specified Recipe,
+        /// based on user input (e.g., recipe ID/name and category name).
+        /// The method should validate that both Recipe and Category
+        /// exist, then create the necessary relationship in the database.
+        /// </summary>
+        internal async Task AddCategoryToRecipe()
+        {
+            Console.Clear();
             // List all categories
             await ListAllCategories();
 
             // Ask user for category name
             Console.Write("Give category name: ");
             string categoryName = Console.ReadLine();
+            if (!string.IsNullOrEmpty(categoryName))
+            { // Find max ID and add 1
+                int id = _dbContext.Categories.Max(x => x.Id) + 1;
 
-            // Find max ID and add 1
-            int id = _dbContext.Categories.Max(x => x.Id) + 1;
+                // Create new entity
+                _dbContext.Categories.Add(new Category
+                {
+                    Id = id,
+                    Name = categoryName,
+                });
 
-            // Create new entity
-               _dbContext.Categories.Add(new Category
-               {
-                   Id = id,
-                   Name = categoryName,
-               });
-
-            // Save the changes to the database
-            _dbContext.SaveChanges();
+                // Save the changes to the database
+                _dbContext.SaveChanges();
             }
-
-           /// <summary>
-           /// Allows the user to add a new Ingredient to the database,
-           /// specifying properties such as Name, Type, and any optional
-           /// nutritional details. Should use EF Core to create and
-           /// save the new Ingredient entity.
-           /// </summary>
-           internal async Task AddNewIngredient()
-           {
-            _dbContext.Ingredients.Add(new Ingredient
+            else
             {
-                Id = 100,
-                Name = "Mutsis :D",
-            });
-
-            _dbContext.SaveChanges();
-
-            Console.Write("XD");
+                Console.WriteLine("Category name cannot be empty!");
+            }
         }
+
+        /// <summary>
+        /// Allows the user to add a new Ingredient to the database,
+        /// specifying properties such as Name, Type, and any optional
+        /// nutritional details. Should use EF Core to create and
+        /// save the new Ingredient entity.
+        /// </summary>
 
         internal async Task AddNewIngredient(string ing)
         {
-            _dbContext.Ingredients.Add(new Ingredient
+            bool exists = _dbContext.Ingredients
+    .Any(x => x.Name.ToLower() == ing.ToLower());
+            if (!exists)
             {
-                Name = ing
-            });
-            Console.WriteLine("TOIMII");
-            _dbContext.SaveChanges();
+                _dbContext.Ingredients.Add(new Ingredient
+                {
+                    Name = ing
+                });
+                Console.WriteLine("Ingredient Added!");
+                _dbContext.SaveChanges();
+            }
+            else
+            {
+                Console.WriteLine("Ingredient already exists!");
+            }
         }
 
         /// <summary>
@@ -109,11 +109,11 @@ namespace RecipeDatabaseApp.Controllers
             Console.Write("Enter recipe name: ");
             string recipeName = Console.ReadLine();
 
-            // 2. Pyydetään kategoria
+            // Pyydetään kategoria
             Console.Write("Enter category name (or leave blank): ");
             string categoryName = Console.ReadLine();
 
-            // 3. Hakee olemassa olevan kategorian (tai luo uuden jos ei löydy)
+            // Hakee olemassa olevan kategorian (tai luo uuden jos ei löydy)
             Category category = null;
             if (!string.IsNullOrEmpty(categoryName))
             {
@@ -128,17 +128,17 @@ namespace RecipeDatabaseApp.Controllers
                 }
             }
 
-            // 4. Pyydetään ainesosien nimet (eroteltu pilkulla)
+            // Pyydetään ainesosien nimet (eroteltu pilkulla)
             Console.Write("Enter ingredients (comma separated): ");
             string ingredientsInput = Console.ReadLine();
             var ingredientNames = ingredientsInput.Split(',').Select(i => i.Trim().ToLower()).ToList();
 
-            // 5. Haetaan olemassa olevat ainesosat tietokannasta
+            // Haetaan olemassa olevat ainesosat tietokannasta
             var existingIngredients = await _dbContext.Ingredients
                 .Where(i => ingredientNames.Contains(i.Name.ToLower()))
                 .ToListAsync();
 
-            // 6. Lisätään uudet ainesosat, joita ei löydy tietokannasta
+            // Lisätään uudet ainesosat, joita ei löydy tietokannasta
             var newIngredients = ingredientNames
                 .Where(name => !existingIngredients.Any(i => i.Name.ToLower() == name))
                 .Select(name => new Ingredient { Name = name })
@@ -171,7 +171,7 @@ namespace RecipeDatabaseApp.Controllers
 
             Console.WriteLine($"Recipe '{recipeName}' has been added successfully!");
         }
-    
+
 
         /// <summary>
         /// Removes an existing Recipe from the database by prompting
@@ -183,78 +183,84 @@ namespace RecipeDatabaseApp.Controllers
         {
             Console.Clear();
             var recipeList = await _dbContext.Recipes.ToListAsync();
+            await ListAllRecipes();
 
-            while (true)
+            Console.WriteLine("Give recipe ID:");
+
+            int.TryParse(Console.ReadLine(), out int result);
+            var deleteRecipe = recipeList.Where(x => x.Id == result).FirstOrDefault();
+
+            if (deleteRecipe != null)
             {
-                Console.WriteLine("Press 0 to go back to the menu");
-                Console.WriteLine("Give recipe ID:");
-                int.TryParse(Console.ReadLine(), out int result);
-
-                if (result == 0)
-                {
-                    break;
-                }
-                var deleteRecipe = recipeList.Where(x => x.Id == result).FirstOrDefault();
-
                 _dbContext.Recipes.Remove(deleteRecipe);
                 _dbContext.SaveChanges();
+                Console.WriteLine("Recipe deleted successfully!");
             }
-            await ListAllRecipes();
+            else
+            {
+                Console.WriteLine("ID not found!");
+            }
+
         }
 
-           /// <summary>
-           /// Fetches all recipes under a specified category by prompting
-           /// the user for the category name. Uses EF Core and LINQ
-           /// to filter recipes belonging to that category, then prints 
-           /// them to the console.
-           /// </summary>
-           internal async Task FetchRecipeByCategory()
-           {
-                Console.Write("Kirjoita kategoria: ");
-                string category = Console.ReadLine();
+        /// <summary>
+        /// Fetches all recipes under a specified category by prompting
+        /// the user for the category name. Uses EF Core and LINQ
+        /// to filter recipes belonging to that category, then prints 
+        /// them to the console.
+        /// </summary>
+        internal async Task FetchRecipeByCategory()
+        {
+            Console.Write("Kirjoita kategoria: ");
+            string category = Console.ReadLine().ToLower(); ;
 
-                var fetchedRecipes = await _dbContext.Recipes
-                    .Include(r => r.Category)
-                    .Where(r => r.Category.Name == category)
-                    .ToListAsync();
+            var fetchedRecipes = await _dbContext.Recipes
+                .Include(r => r.Category)
+                .Where(r => r.Category.Name.ToLower() == category)
+                .ToListAsync();
 
-                if (fetchedRecipes == null || fetchedRecipes.Count == 0)
+            if (fetchedRecipes == null || fetchedRecipes.Count == 0)
+            {
+                Console.WriteLine("No recipes were found in this category.");
+                return;
+            }
+            else
+            {
+                foreach (var item in fetchedRecipes)
                 {
-                    Console.WriteLine("No recipes were found in this category.");
-                    return;
-                }
-                else
-                {
-                    foreach (var item in fetchedRecipes)
-                    {
-                        Console.WriteLine($"ID: {item.Id}, Name: {item.Name}, Category: {item.Category.Name}");
-                    }
+                    Console.WriteLine($"ID: {item.Id}, Name: {item.Name}, Category: {item.Category.Name}");
                 }
             }
+        }
 
-           /// <summary>
-           /// Removes a given Category association from a Recipe.
-           /// The method should confirm both entities exist, then remove
-           /// their relationship in the junction table or foreign key.
-           /// </summary>
-           internal async Task RemoveCategoryFromRecipe()
-           {
+        /// <summary>
+        /// Removes a given Category association from a Recipe.
+        /// The method should confirm both entities exist, then remove
+        /// their relationship in the junction table or foreign key.
+        /// </summary>
+        internal async Task RemoveCategoryFromRecipe()
+        {
 
             // List all categories
-                await ListAllCategories();    
+            await ListAllCategories();
 
             // Ask for id
-                Console.Write("Kirjoita haluamasi ID: ");
-                int id = int.Parse(Console.ReadLine());
+            Console.Write("Kirjoita haluamasi ID: ");
+            int id = int.Parse(Console.ReadLine());
+            var itemToDelete = _dbContext.Categories.Where(x => x.Id == id).FirstOrDefault();
 
-                var itemToDelete = _dbContext.Categories.Where(x => x.Id == id).FirstOrDefault();
-
-                if (itemToDelete == null)
-                    return;
-
+            if (itemToDelete == null)
+            {
+                Console.WriteLine("ID not found!");
+                return;
+            }
+            else
+            {
                 _dbContext.Categories.Remove(itemToDelete);
                 _dbContext.SaveChanges();
-           }
+                Console.WriteLine("Category deleted successfully!");
+            }
+        }
 
         internal async Task ListAllCategories()
         {
@@ -283,7 +289,7 @@ namespace RecipeDatabaseApp.Controllers
         /// all those ingredients.
         /// </summary>
         internal async Task SearchRecipeByIngredients()
-          
+
         {
             Console.Clear();
             Console.WriteLine("Syötä halutut ainesosat, erottele useat ainesosat pilkuilla.");
@@ -319,14 +325,14 @@ namespace RecipeDatabaseApp.Controllers
             }
         }
 
-           /// <summary>
-           /// Updates fields of an existing Recipe, e.g., Name, Description,
-           /// or other metadata. Prompts the user for a Recipe identifier,
-           /// retrieves the entity from the database, modifies fields,
-           /// and saves changes back to the database.
-           /// </summary>
-           internal async Task UpdateRecipe()
-           {
+        /// <summary>
+        /// Updates fields of an existing Recipe, e.g., Name, Description,
+        /// or other metadata. Prompts the user for a Recipe identifier,
+        /// retrieves the entity from the database, modifies fields,
+        /// and saves changes back to the database.
+        /// </summary>
+        internal async Task UpdateRecipe()
+        {
 
             Console.Clear();
             Console.WriteLine("What recipe do you want to update?\n");
@@ -346,7 +352,7 @@ namespace RecipeDatabaseApp.Controllers
 
             throw new NotImplementedException();
 
-           }
-     
+        }
+
     }
 }
