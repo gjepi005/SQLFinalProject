@@ -45,36 +45,32 @@ namespace RecipeDatabaseApp.Controllers
         /// </summary>
         internal async Task AddCategoryToRecipe()
         {
+            Console.Clear();
             // List all categories
             await ListAllCategories();
             
 
             // Ask user for category name
             Console.Write("Give category name: ");
-            string categoryName = Console.ReadLine().ToLower();
-            var existingCategories = _dbContext.Categories.Select(x => x.Name.ToLower() == categoryName).FirstOrDefault();
+            string categoryName = Console.ReadLine();
+            if (!string.IsNullOrEmpty(categoryName))
+            { // Find max ID and add 1
+                int id = _dbContext.Categories.Max(x => x.Id) + 1;
 
-            // Find max ID and add 1
-            int id = _dbContext.Categories.Max(x => x.Id) + 1;
-
-            // Create new entity
-            if (!existingCategories)
-           {
+                // Create new entity
                 _dbContext.Categories.Add(new Category
                 {
                     Id = id,
                     Name = categoryName,
                 });
 
-                Console.WriteLine($"Category {categoryName} added!");
+                // Save the changes to the database
+                _dbContext.SaveChanges();
             }
             else
             {
-                Console.WriteLine("Category already exists!");
+                Console.WriteLine("Category name cannot be empty!");
             }
-
-            // Save the changes to the database
-            _dbContext.SaveChanges();
         }
 
         /// <summary>
@@ -86,20 +82,21 @@ namespace RecipeDatabaseApp.Controllers
 
         internal async Task AddNewIngredient(string ing)
         {
-            var existingNames = _dbContext.Ingredients
-    .Select(i => i.Name)
-    .ToHashSet();
-
-            var newIngredients = ing
-                .Where(i => !existingNames.Contains(i.ToString()))
-                .ToList();
-
-            _dbContext.Ingredients.Add(new Ingredient
+            bool exists = _dbContext.Ingredients
+    .Any(x => x.Name.ToLower() == ing.ToLower());
+            if (!exists)
             {
-                Name = ing
-            });
-            Console.WriteLine("Ingredient Added!");
-            _dbContext.SaveChanges();
+                _dbContext.Ingredients.Add(new Ingredient
+                {
+                    Name = ing
+                });
+                Console.WriteLine("Ingredient Added!");
+                _dbContext.SaveChanges();
+            }
+            else
+            {
+                Console.WriteLine("Ingredient already exists!");
+            }
         }
 
         /// <summary>
@@ -113,9 +110,11 @@ namespace RecipeDatabaseApp.Controllers
             Console.Write("Enter recipe name: ");
             string recipeName = Console.ReadLine();
 
+            // Pyydetään kategoria
             Console.Write("Enter category name (or leave blank): ");
             string categoryName = Console.ReadLine();
 
+            // Hakee olemassa olevan kategorian (tai luo uuden jos ei löydy)
             Category category = null;
             if (!string.IsNullOrEmpty(categoryName))
             {
@@ -124,24 +123,27 @@ namespace RecipeDatabaseApp.Controllers
 
                 if (category == null)
                 {
+                    // Jos kategoriaa ei ole, voidaan luoda uusi
                     category = new Category { Name = categoryName };
                     await _dbContext.Categories.AddAsync(category);
                 }
             }
 
+            // Pyydetään ainesosien nimet (eroteltu pilkulla)
             Console.Write("Enter ingredients (comma separated): ");
             string ingredientsInput = Console.ReadLine();
             var ingredientNames = ingredientsInput.Split(',').Select(i => i.Trim().ToLower()).ToList();
 
-            // Haetaan ainesosat tietokannasta
+            // Haetaan olemassa olevat ainesosat tietokannasta
             var existingIngredients = await _dbContext.Ingredients
-          .Where(i => ingredientNames.Contains(i.Name.ToLower()))
-          .ToListAsync();
+                .Where(i => ingredientNames.Contains(i.Name.ToLower()))
+                .ToListAsync();
 
+            // Lisätään uudet ainesosat, joita ei löydy tietokannasta
             var newIngredients = ingredientNames
-       .Where(name => !existingIngredients.Any(i => i.Name.ToLower() == name))
-       .Select(name => new Ingredient { Name = name })
-       .ToList();
+                .Where(name => !existingIngredients.Any(i => i.Name.ToLower() == name))
+                .Select(name => new Ingredient { Name = name })
+                .ToList();
 
             if (newIngredients.Any())
             {
@@ -154,22 +156,23 @@ namespace RecipeDatabaseApp.Controllers
                     .ToListAsync();
             }
 
-            // Luodaan uusi resepti
+            // 7. Luodaan uusi resepti
             var newRecipe = new Recipe
             {
                 Name = recipeName,
-                Category = category
+                Category = category  // Liitetään kategoria, jos valittiin
             };
 
-            // Liitetään ainesosat reseptiin
+            // 8. Liitetään ainesosat reseptiin
             newRecipe.Ingredients = existingIngredients;
 
-            // Lisätään resepti tietokantaan
+            // 9. Lisätään resepti tietokantaan
             await _dbContext.Recipes.AddAsync(newRecipe);
             await _dbContext.SaveChangesAsync();
 
             Console.WriteLine($"Recipe '{recipeName}' has been added successfully!");
         }
+
 
         /// <summary>
         /// Removes an existing Recipe from the database by prompting
@@ -184,8 +187,8 @@ namespace RecipeDatabaseApp.Controllers
             await ListAllRecipes();
 
             Console.WriteLine("Give recipe ID:");
-            int.TryParse(Console.ReadLine(), out int result);
 
+            int.TryParse(Console.ReadLine(), out int result);
             var deleteRecipe = recipeList.Where(x => x.Id == result).FirstOrDefault();
 
             if (deleteRecipe != null)
@@ -193,10 +196,12 @@ namespace RecipeDatabaseApp.Controllers
                 _dbContext.Recipes.Remove(deleteRecipe);
                 Console.WriteLine($"Recipe {deleteRecipe.Name} deleted!");
                 _dbContext.SaveChanges();
-       
+                Console.WriteLine("Recipe deleted successfully!");
             }
             else
-                Console.WriteLine("Recipe not found!");
+            {
+                Console.WriteLine("ID not found!");
+            }
 
         }
 
@@ -209,11 +214,11 @@ namespace RecipeDatabaseApp.Controllers
         internal async Task FetchRecipeByCategory()
         {
             Console.Write("Kirjoita kategoria: ");
-            string category = Console.ReadLine();
+            string category = Console.ReadLine().ToLower(); ;
 
             var fetchedRecipes = await _dbContext.Recipes
                 .Include(r => r.Category)
-                .Where(r => r.Category.Name.ToLower() == category.ToLower())
+                .Where(r => r.Category.Name.ToLower() == category)
                 .ToListAsync();
 
             if (fetchedRecipes == null || fetchedRecipes.Count == 0)
@@ -244,16 +249,19 @@ namespace RecipeDatabaseApp.Controllers
             // Ask for id
             Console.Write("Kirjoita haluamasi ID: ");
             int id = int.Parse(Console.ReadLine());
-
             var itemToDelete = _dbContext.Categories.Where(x => x.Id == id).FirstOrDefault();
 
             if (itemToDelete == null)
-                {Console.WriteLine("ID not found!");
+            {
+                Console.WriteLine("ID not found!");
                 return;
             }
-
-            _dbContext.Categories.Remove(itemToDelete);
-            _dbContext.SaveChanges();
+            else
+            {
+                _dbContext.Categories.Remove(itemToDelete);
+                _dbContext.SaveChanges();
+                Console.WriteLine("Category deleted successfully!");
+            }
         }
 
         internal async Task ListAllCategories()
@@ -342,7 +350,63 @@ namespace RecipeDatabaseApp.Controllers
                 Console.WriteLine($"Id: {recipe.Id}, Name: {recipe.Name}");
             }
 
-            string userInput = Console.ReadLine();
+            Console.WriteLine("\nEnter Recipe ID: ");
+            if(!int.TryParse(Console.ReadLine(), out int userInput))
+            {
+                Console.WriteLine("Invalid ID entered.");
+                return;
+            }
+            var existingRecipes = await _dbContext.Recipes
+                .Include(r => r.Ingredients)
+                .FirstOrDefaultAsync(r => r.Id == userInput);
+
+            if (existingRecipes == null)
+            {
+                Console.WriteLine("Recipe not found");
+                return;
+            }
+
+            Console.Clear();
+            Console.WriteLine($"Updating Recipe: {existingRecipes.Name}");
+
+            Console.WriteLine($"\nEnter new name (leave blank to keep current): ");
+            var newName = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(newName))
+                existingRecipes.Name = newName;
+
+            //TODO Category
+            Console.WriteLine("\nAvailable categories:");
+            var categories = await _dbContext.Categories.ToListAsync();
+            foreach (var category in categories)
+            {
+                Console.WriteLine($"Id: {category.Id}, Name: {category.Name}");
+            }
+            Console.WriteLine("\nEnter new category ID (leave blank to keep current): ");
+            var newCategoryInput = Console.ReadLine();
+
+            if(!string.IsNullOrWhiteSpace(newCategoryInput) && int.TryParse(newCategoryInput, out int newCategoryId))
+            {
+                var newCategory = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == newCategoryId);
+                if(newCategory != null)
+                {
+                    existingRecipes.Category = newCategory;
+                }
+                else
+                {
+                    Console.WriteLine("Category not found. Keeping the old category.");
+                }
+            }
+
+
+            //TODO Ingredients
+            Console.WriteLine("\nDo you want to update ingredients? (y/n)");
+            var updateIngredients = Console.ReadLine()?.ToLower();
+
+            if(updateIngredients == "y")
+            {
+                foreach(var ingredient in existingRecipes.Ingredients)
+                {
+                    Console.WriteLine($"\n Current Ingredient: {ingredient.Name}");
 
         }
 

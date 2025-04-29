@@ -11,9 +11,6 @@ namespace RecipeDatabaseApp
         static async Task Main(string[] args)
         {
             await RunMenu();
-
-           // 2.Pass the context to the RunMenu method to run a simple menu loop
-            RunMenu();
         }
 
         /// <summary>
@@ -39,8 +36,8 @@ namespace RecipeDatabaseApp
                     Console.WriteLine("5. Delete Recipe");
                     Console.WriteLine("6. Fetch Recipes by Category");
                     Console.WriteLine("7. Search Recipes by Ingredients");
-                    Console.WriteLine("8. Add Category to Recipe");
-                    Console.WriteLine("9. Remove Category from Recipe");
+                    Console.WriteLine("8. Add Category");
+                    Console.WriteLine("9. Remove Category");
                     Console.WriteLine("0. Exit");
                     Console.Write("Select an option: ");
                     var input = Console.ReadLine();
@@ -53,12 +50,11 @@ namespace RecipeDatabaseApp
                             await recipeController.ListAllRecipes();
                             break;
                         case "2":
-                            Console.WriteLine("Enter ingredient name:");
-                            string ingredient = Console.ReadLine();
-                            if (!string.IsNullOrEmpty(ingredient))
-                            {
-                                await recipeController.AddNewIngredient(ingredient);
-                            }
+                            Console.Clear();
+                            Console.WriteLine("Enter Ingredient name:");
+                            string option = Console.ReadLine();
+                            if (!string.IsNullOrEmpty(option))
+                                await recipeController.AddNewIngredient(option);
                             else
                                 Console.WriteLine("Cannot be empty!");
                             break;
