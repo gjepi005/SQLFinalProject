@@ -48,7 +48,7 @@ namespace RecipeDatabaseApp.Controllers
             Console.Clear();
             // List all categories
             await ListAllCategories();
-            
+
 
             // Ask user for category name
             Console.Write("Give category name: ");
@@ -351,7 +351,7 @@ namespace RecipeDatabaseApp.Controllers
             }
 
             Console.WriteLine("\nEnter Recipe ID: ");
-            if(!int.TryParse(Console.ReadLine(), out int userInput))
+            if (!int.TryParse(Console.ReadLine(), out int userInput))
             {
                 Console.WriteLine("Invalid ID entered.");
                 return;
@@ -384,10 +384,10 @@ namespace RecipeDatabaseApp.Controllers
             Console.WriteLine("\nEnter new category ID (leave blank to keep current): ");
             var newCategoryInput = Console.ReadLine();
 
-            if(!string.IsNullOrWhiteSpace(newCategoryInput) && int.TryParse(newCategoryInput, out int newCategoryId))
+            if (!string.IsNullOrWhiteSpace(newCategoryInput) && int.TryParse(newCategoryInput, out int newCategoryId))
             {
                 var newCategory = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == newCategoryId);
-                if(newCategory != null)
+                if (newCategory != null)
                 {
                     existingRecipes.Category = newCategory;
                 }
@@ -402,13 +402,15 @@ namespace RecipeDatabaseApp.Controllers
             Console.WriteLine("\nDo you want to update ingredients? (y/n)");
             var updateIngredients = Console.ReadLine()?.ToLower();
 
-            if(updateIngredients == "y")
+            if (updateIngredients == "y")
             {
-                foreach(var ingredient in existingRecipes.Ingredients)
+                foreach (var ingredient in existingRecipes.Ingredients)
                 {
                     Console.WriteLine($"\n Current Ingredient: {ingredient.Name}");
 
-        }
+                }
 
+            }
+        }
     }
 }
