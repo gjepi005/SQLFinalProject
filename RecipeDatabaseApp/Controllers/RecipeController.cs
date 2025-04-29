@@ -348,9 +348,63 @@ namespace RecipeDatabaseApp.Controllers
                 Console.WriteLine($"Id: {recipe.Id}, Name: {recipe.Name}");
             }
 
-            string userInput = Console.ReadLine();
+            Console.WriteLine("\nEnter Recipe ID: ");
+            if(!int.TryParse(Console.ReadLine(), out int userInput))
+            {
+                Console.WriteLine("Invalid ID entered.");
+                return;
+            }
+            var existingRecipes = await _dbContext.Recipes
+                .Include(r => r.Ingredients)
+                .FirstOrDefaultAsync(r => r.Id == userInput);
 
-            throw new NotImplementedException();
+            if (existingRecipes == null)
+            {
+                Console.WriteLine("Recipe not found");
+                return;
+            }
+
+            Console.Clear();
+            Console.WriteLine($"Updating Recipe: {existingRecipes.Name}");
+
+            Console.WriteLine($"\nEnter new name (leave blank to keep current): ");
+            var newName = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(newName))
+                existingRecipes.Name = newName;
+
+            //TODO Category
+            Console.WriteLine("\nAvailable categories:");
+            var categories = await _dbContext.Categories.ToListAsync();
+            foreach (var category in categories)
+            {
+                Console.WriteLine($"Id: {category.Id}, Name: {category.Name}");
+            }
+            Console.WriteLine("\nEnter new category ID (leave blank to keep current): ");
+            var newCategoryInput = Console.ReadLine();
+
+            if(!string.IsNullOrWhiteSpace(newCategoryInput) && int.TryParse(newCategoryInput, out int newCategoryId))
+            {
+                var newCategory = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == newCategoryId);
+                if(newCategory != null)
+                {
+                    existingRecipes.Category = newCategory;
+                }
+                else
+                {
+                    Console.WriteLine("Category not found. Keeping the old category.");
+                }
+            }
+
+
+            //TODO Ingredients
+            Console.WriteLine("\nDo you want to update ingredients? (y/n)");
+            var updateIngredients = Console.ReadLine()?.ToLower();
+
+            if(updateIngredients == "y")
+            {
+                foreach(var ingredient in existingRecipes.Ingredients)
+                {
+                    Console.WriteLine($"\n Current Ingredient: {ingredient.Name}");
 
         }
 
